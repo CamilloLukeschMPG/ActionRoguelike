@@ -10,6 +10,7 @@
 void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
 {
 	LidMesh->SetRelativeRotation(FRotator(TargetPitch, 0.0f, 0.0f));
+	TargetPitch = TargetPitch ? 110.f : 0.f;
 }
 
 // Sets default values
