@@ -35,6 +35,11 @@ void ASExplosiveBarrel::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 void ASExplosiveBarrel::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ASExplosiveBarrel::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
 
 	MeshComp->OnComponentHit.AddDynamic(this, &ASExplosiveBarrel::OnHit);
 }
