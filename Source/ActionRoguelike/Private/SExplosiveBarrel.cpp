@@ -13,15 +13,19 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 	PrimaryActorTick.bCanEverTick = true;
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
+	MeshComp->SetSimulatePhysics(true);
+	RootComponent = MeshComp;
 
 	RadialForceComp = CreateDefaultSubobject<URadialForceComponent>("RadialForceComp");
 	RadialForceComp->SetupAttachment(RootComponent);
 
+	RadialForceComp->SetAutoActivate(false);
+
 	RadialForceComp->ImpulseStrength = 2000.0f;
 	RadialForceComp->Radius = 600.0f;
 	RadialForceComp->bImpulseVelChange = true;
-	RadialForceComp->bAutoActivate = false;
 
+	RadialForceComp->AddCollisionChannelToAffect(ECC_WorldDynamic);
 
 }
 
