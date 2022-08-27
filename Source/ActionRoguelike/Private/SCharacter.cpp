@@ -12,6 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -64,18 +65,43 @@ void ASCharacter::PrimaryAttack()
 {
 	PlayAnimMontage(AttackAnim);
 
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, 0.2f);
-
-	//GetWorldTimeManager().ClearTimer(TimerHandle_PrimaryAttack);
-
-	
+	FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &ASCharacter::SpawnProjectile_TimeElapsed, Cast<UClass>(AttackProjectileClass));
+	GetWorldTimerManager().SetTimer(TimerHandle_SpawnProjectile, Delegate, 0.2f, false);
 }
 
-void ASCharacter::PrimaryAttack_TimeElapsed()
+void ASCharacter::Dash()
+{
+	PlayAnimMontage(AttackAnim);
+
+	FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &ASCharacter::SpawnProjectile_TimeElapsed, Cast<UClass>(DashProjectileClass));
+	GetWorldTimerManager().SetTimer(TimerHandle_SpawnProjectile, Delegate, 0.2f, false);
+}
+
+void ASCharacter::SpawnProjectile_TimeElapsed(UClass* ProjectileClass)
 {
 	FVector const HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
-	FTransform const SpawnTM = FTransform(GetControlRotation(), HandLocation);
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+
+	FVector Start = CameraComp->GetComponentLocation();
+	FVector End = Start + (CameraComp->GetComponentRotation().Vector() * 100000.0f);
+
+	FHitResult Hit;
+	bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, Start, End, ObjectQueryParams);
+
+	FVector Target = bBlockingHit ? Hit.Location : End;
+
+	FRotator Rot = UKismetMathLibrary::Conv_VectorToRotator(Target - HandLocation);
+
+	FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
+
+	DrawDebugLine(GetWorld(), CameraComp->GetComponentLocation(), CameraComp->GetComponentLocation() + CameraComp->GetComponentRotation().Vector() * 100000.0f, LineColor, false, 4.0f, 0, 1.0f);
+	DrawDebugLine(GetWorld(), HandLocation, HandLocation + CameraComp->GetComponentRotation().Vector() * 10000.0f, FColor::Yellow, false, 4.0f, 0, 2.0f);
+	DrawDebugLine(GetWorld(), HandLocation, Target, FColor::White, false, 4.0f, 0, 2.0f);
+
+	FTransform const SpawnTM = FTransform(Rot, HandLocation);
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -84,6 +110,7 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 }
 
+
 void ASCharacter::PrimaryInteract()
 {
 	if (InteractionComp)
@@ -91,6 +118,7 @@ void ASCharacter::PrimaryInteract()
 		InteractionComp->PrimaryInteract();
 	}
 }
+
 
 // Called every frame
 void ASCharacter::Tick(float DeltaTime)
@@ -113,6 +141,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttack);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
+	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ASCharacter::Dash);
 
 }
 
