@@ -4,6 +4,7 @@
 #include "SCharacter.h"
 
 #include "SInteractionComponent.h"
+#include "SAttributeComponent.h"
 
 #include "TimerManager.h"
 #include "Camera/CameraComponent.h"
@@ -11,7 +12,6 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -28,6 +28,7 @@ ASCharacter::ASCharacter()
 	CameraComp->SetupAttachment(SpringArmComp);
 
 	InteractionComp = CreateDefaultSubobject<USInteractionComponent>("InteractionComp");
+	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
