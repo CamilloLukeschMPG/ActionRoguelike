@@ -82,26 +82,23 @@ void ASCharacter::SpawnProjectile_TimeElapsed(UClass* ProjectileClass)
 {
 	FVector const HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
 
 	FVector Start = CameraComp->GetComponentLocation();
-	FVector End = Start + (CameraComp->GetComponentRotation().Vector() * 100000.0f);
+	FVector End = Start + (CameraComp->GetComponentRotation().Vector() * 5000.0f);
 
 	FHitResult Hit;
-	bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, Start, End, ObjectQueryParams);
+	bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, Start, End, ObjectQueryParams, Params);
 
-	FVector Target = bBlockingHit ? Hit.Location : End;
+	FVector Target = bBlockingHit ? Hit.ImpactPoint : End;
 
 	FRotator Rot = UKismetMathLibrary::Conv_VectorToRotator(Target - HandLocation);
-
-	FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
-
-	DrawDebugLine(GetWorld(), CameraComp->GetComponentLocation(), CameraComp->GetComponentLocation() + CameraComp->GetComponentRotation().Vector() * 100000.0f, LineColor, false, 4.0f, 0, 1.0f);
-	DrawDebugLine(GetWorld(), HandLocation, HandLocation + CameraComp->GetComponentRotation().Vector() * 10000.0f, FColor::Yellow, false, 4.0f, 0, 2.0f);
-	DrawDebugLine(GetWorld(), HandLocation, Target, FColor::White, false, 4.0f, 0, 2.0f);
-
 	FTransform const SpawnTM = FTransform(Rot, HandLocation);
 
 	FActorSpawnParameters SpawnParams;
@@ -109,6 +106,11 @@ void ASCharacter::SpawnProjectile_TimeElapsed(UClass* ProjectileClass)
 	SpawnParams.Instigator = this;
 
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+
+	//FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
+	//DrawDebugLine(GetWorld(), CameraComp->GetComponentLocation(), CameraComp->GetComponentLocation() + CameraComp->GetComponentRotation().Vector() * 100000.0f, LineColor, false, 4.0f, 0, 1.0f);
+	//DrawDebugLine(GetWorld(), HandLocation, HandLocation + CameraComp->GetComponentRotation().Vector() * 10000.0f, FColor::Yellow, false, 4.0f, 0, 2.0f);
+	//DrawDebugLine(GetWorld(), HandLocation, Target, FColor::White, false, 4.0f, 0, 2.0f);
 }
 
 

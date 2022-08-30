@@ -4,6 +4,7 @@
 #include "SDashProjectile.h"
 
 #include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "Components/SphereComponent.h"
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
@@ -47,13 +48,21 @@ void ASDashProjectile::Explode()
 	FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &ASDashProjectile::TeleportInstigator);
 	GetWorldTimerManager().SetTimer(TimerHandle_Explode, Delegate, 0.2f, false);
 
-	FHitResult Hit;
-	MovementComp->StopSimulating(Hit);
+
+	EffectComp->DeactivateSystem();
+
+	MovementComp->StopMovementImmediately();
+	SetActorEnableCollision(false);
 }
 
 void ASDashProjectile::TeleportInstigator()
 {
-	GetInstigator()->SetActorLocation(GetActorLocation());
+	AActor* ActorToTeleport = GetInstigator();
+	if (ensure(ActorToTeleport))
+	{
+		ActorToTeleport->TeleportTo(GetActorLocation(), ActorToTeleport->GetActorRotation(), false, false);
+	}
+	//GetInstigator()->SetActorLocation(GetActorLocation());
 
 	GetWorld()->DestroyActor(this);
 }
