@@ -132,10 +132,24 @@ void ASCharacter::PrimaryInteract()
 
 void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
-	if (NewHealth <= 0.0f && Delta < 0.0f)
+	//TODO hitflash
+	if (Delta < 0.0f)
 	{
-		APlayerController* PC = Cast<APlayerController>(GetController());
-		DisableInput(PC);
+		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+
+		if (NewHealth <= 0.0f)
+		{
+			APlayerController* PC = Cast<APlayerController>(GetController());
+			DisableInput(PC);
+		}
+	}
+	else
+	{
+		if (!InputEnabled())
+		{
+			APlayerController* PC = Cast<APlayerController>(GetController());
+			EnableInput(PC);
+		}
 	}
 }
 
