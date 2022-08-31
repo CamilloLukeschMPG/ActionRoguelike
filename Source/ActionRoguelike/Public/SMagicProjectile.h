@@ -25,7 +25,8 @@ protected:
 	UFUNCTION()
 	void OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float DamageAmount;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
