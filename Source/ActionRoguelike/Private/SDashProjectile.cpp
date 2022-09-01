@@ -7,7 +7,6 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/SphereComponent.h"
 #include "TimerManager.h"
-#include "Kismet/GameplayStatics.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 
@@ -20,31 +19,19 @@ void ASDashProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AActor* OwningActor = GetInstigator();
-	SphereComp->IgnoreActorWhenMoving(OwningActor, true);
-
 	FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &ASDashProjectile::Explode);
 	GetWorldTimerManager().SetTimer(TimerHandle_Explode, Delegate, 0.2f, false);
 }
 
 
-void ASDashProjectile::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-
-	SphereComp->OnComponentHit.AddDynamic(this, &ASDashProjectile::OnHit);
-}
-
 void ASDashProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	Super::OnHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
 	Explode();
 }
 
 void ASDashProjectile::Explode()
 {
-
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, GetActorTransform(), true, EPSCPoolMethod::None, true);
-
 	FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &ASDashProjectile::TeleportInstigator);
 	GetWorldTimerManager().SetTimer(TimerHandle_Explode, Delegate, 0.2f, false);
 

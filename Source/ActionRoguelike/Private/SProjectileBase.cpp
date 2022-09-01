@@ -7,6 +7,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ASProjectileBase::ASProjectileBase()
@@ -29,4 +30,29 @@ ASProjectileBase::ASProjectileBase()
 
 	AudioComp = CreateDefaultSubobject<UAudioComponent>("AudioComp");
 	AudioComp->bAutoActivate = true;
+}
+
+
+void ASProjectileBase::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	AActor* OwningActor = GetInstigator();
+	ensure(OwningActor);
+	SphereComp->IgnoreActorWhenMoving(OwningActor, true);
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASProjectileBase::OnOverlap);
+	SphereComp->OnComponentHit.AddDynamic(this, &ASProjectileBase::OnHit);
+}
+
+void ASProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	ensure(HitEffect);
+	ensure(ImpactSound);
+
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, GetActorTransform(), true, EPSCPoolMethod::None, true);
+	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
+}
+
+void ASProjectileBase::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+
 }

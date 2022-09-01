@@ -19,17 +19,12 @@ class ACTIONROGUELIKE_API ASDashProjectile : public ASProjectileBase
 public:
 	ASDashProjectile();
 
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	virtual void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
 protected:
 
 	FTimerHandle TimerHandle_Explode;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UParticleSystem* HitEffect;
-
 	virtual void BeginPlay() override;
-	virtual void PostInitializeComponents() override;
 
 	void Explode();
 

@@ -10,6 +10,8 @@ class USphereComponent;
 class UProjectileMovementComponent;
 class UParticleSystemComponent;
 class UAudioComponent;
+class USoundBase;
+
 
 UCLASS(ABSTRACT)
 class ACTIONROGUELIKE_API ASProjectileBase : public AActor
@@ -21,6 +23,7 @@ public:
 	ASProjectileBase();
 
 protected:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USphereComponent* SphereComp;
 
@@ -32,5 +35,19 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UAudioComponent* AudioComp;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UParticleSystem* HitEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USoundBase* ImpactSound;
+
+	UFUNCTION()
+	virtual void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION()
+	virtual void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	virtual void PostInitializeComponents() override;
+
 };

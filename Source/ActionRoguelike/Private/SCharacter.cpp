@@ -7,6 +7,7 @@
 #include "SAttributeComponent.h"
 
 #include "TimerManager.h"
+#include "Blueprint/UserWidget.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
