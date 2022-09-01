@@ -26,7 +26,7 @@ void ASDashProjectile::BeginPlay()
 
 void ASDashProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	Super::OnHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
+	PlayImpactEffects();
 	Explode();
 }
 
@@ -34,7 +34,6 @@ void ASDashProjectile::Explode()
 {
 	FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &ASDashProjectile::TeleportInstigator);
 	GetWorldTimerManager().SetTimer(TimerHandle_Explode, Delegate, 0.2f, false);
-
 
 	EffectComp->DeactivateSystem();
 
@@ -49,7 +48,6 @@ void ASDashProjectile::TeleportInstigator()
 	{
 		ActorToTeleport->TeleportTo(GetActorLocation(), ActorToTeleport->GetActorRotation(), false, false);
 	}
-	//GetInstigator()->SetActorLocation(GetActorLocation());
 
-	GetWorld()->DestroyActor(this);
+	Destroy();
 }
