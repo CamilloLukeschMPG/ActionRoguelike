@@ -14,6 +14,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 
@@ -117,6 +118,8 @@ void ASCharacter::SpawnProjectile_TimeElapsed(UClass* ProjectileClass)
 
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 
+
+	UGameplayStatics::SpawnEmitterAttached(MuzzleFlashEffect, GetMesh(), "Muzzle_01");
 	//FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
 	//DrawDebugLine(GetWorld(), CameraComp->GetComponentLocation(), CameraComp->GetComponentLocation() + CameraComp->GetComponentRotation().Vector() * 100000.0f, LineColor, false, 4.0f, 0, 1.0f);
 	//DrawDebugLine(GetWorld(), HandLocation, HandLocation + CameraComp->GetComponentRotation().Vector() * 10000.0f, FColor::Yellow, false, 4.0f, 0, 2.0f);

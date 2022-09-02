@@ -63,6 +63,9 @@ void ASProjectileBase::PlayImpactEffects()
 	ensure(HitEffect);
 	ensure(ImpactSound);
 
+	//TSubclassOf<UCameraShakeBase> test = TSubclassOf<UCameraShakeBase>(CameraShake);
+
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, GetActorTransform(), true, EPSCPoolMethod::None, true);
 	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
+	//UGameplayStatics::PlayWorldCameraShake(this, CameraShake, GetActorLocation(), 1000.0f, 3000.0f);
 }

@@ -49,6 +49,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USAttributeComponent* AttributeComp;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UParticleSystem* MuzzleFlashEffect;
+
+
 	// Called when the game starts or when spawned
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
