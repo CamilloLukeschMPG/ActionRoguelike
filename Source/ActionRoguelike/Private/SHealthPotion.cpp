@@ -11,14 +11,13 @@ ASHealthPotion::ASHealthPotion()
 
 void ASHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 {
+	ensure(InstigatorPawn);
 	AActor* OtherActor = Cast<AActor>(InstigatorPawn);
 	USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 	if (AttributeComp)
 	{
-		if (AttributeComp->Health < AttributeComp->MaxHealth)
+		if (AttributeComp->ApplyHealthChange(HealAmount))
 		{
-			AttributeComp->ApplyHealthChange(HealAmount);
-			
 			TriggerPickupTimer();
 		}
 	}

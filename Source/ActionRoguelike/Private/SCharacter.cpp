@@ -37,6 +37,8 @@ ASCharacter::ASCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	bUseControllerRotationYaw = false;
+
+	HandSocketName = "Muzzle_01";
 }
 
 void ASCharacter::PostInitializeComponents()
@@ -91,7 +93,7 @@ void ASCharacter::Dash()
 
 void ASCharacter::SpawnProjectile_TimeElapsed(UClass* ProjectileClass)
 {
-	FVector const HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	FVector const HandLocation = GetMesh()->GetSocketLocation(HandSocketName);
 
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
@@ -119,7 +121,7 @@ void ASCharacter::SpawnProjectile_TimeElapsed(UClass* ProjectileClass)
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 
 
-	UGameplayStatics::SpawnEmitterAttached(MuzzleFlashEffect, GetMesh(), "Muzzle_01");
+	UGameplayStatics::SpawnEmitterAttached(MuzzleFlashEffect, GetMesh(), HandSocketName);
 	//FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
 	//DrawDebugLine(GetWorld(), CameraComp->GetComponentLocation(), CameraComp->GetComponentLocation() + CameraComp->GetComponentRotation().Vector() * 100000.0f, LineColor, false, 4.0f, 0, 1.0f);
 	//DrawDebugLine(GetWorld(), HandLocation, HandLocation + CameraComp->GetComponentRotation().Vector() * 10000.0f, FColor::Yellow, false, 4.0f, 0, 2.0f);
