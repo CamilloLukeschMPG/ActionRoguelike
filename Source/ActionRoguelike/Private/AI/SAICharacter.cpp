@@ -8,6 +8,7 @@
 #include "Perception/PawnSensingComponent.h"
 #include "DrawDebugHelpers.h"
 #include "SAttributeComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 
 // Sets default values
 ASAICharacter::ASAICharacter()
@@ -16,7 +17,7 @@ ASAICharacter::ASAICharacter()
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-
+	FindCoverHealthPercentage = 0.3f;
 }
 
 void ASAICharacter::PostInitializeComponents()
@@ -25,6 +26,11 @@ void ASAICharacter::PostInitializeComponents()
 
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &ASAICharacter::OnPawnSeen);
 	AttributeComp->OnHealthChanged.AddDynamic(this, &ASAICharacter::OnHealthChanged);
+}
+
+void ASAICharacter::BeginPlay()
+{
+	Super::BeginPlay();
 }
 
 void ASAICharacter::OnPawnSeen(APawn* Pawn)
@@ -42,5 +48,8 @@ void ASAICharacter::OnPawnSeen(APawn* Pawn)
 
 void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
-	
+	if (Delta < 0.0f)
+	{
+		GetMesh()->SetScalarParameterValueOnMaterials("HitFlashTime", GetWorld()->TimeSeconds);
+	}
 }

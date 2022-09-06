@@ -25,3 +25,8 @@ bool USAttributeComponent::IsAlive() const
 {
 	return Health > 0.0f;
 }
+
+float USAttributeComponent::GetHealthPercentage() const
+{
+	return Health / MaxHealth;
+}

@@ -19,6 +19,10 @@ public:
 
 protected:
 	virtual void PostInitializeComponents() override;
+	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, Category = "Behaviour")
+	float FindCoverHealthPercentage;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UPawnSensingComponent* PawnSensingComp;
