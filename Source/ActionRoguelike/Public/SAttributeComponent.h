@@ -26,7 +26,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
 	float Health;
-	
+
 
 public:
 
