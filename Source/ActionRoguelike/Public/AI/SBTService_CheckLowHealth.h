@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AIModule/Classes/BehaviorTree/BehaviorTreeTypes.h"
 #include "AIModule/Classes/BehaviorTree/BTService.h"
 #include "SBTService_CheckLowHealth.generated.h"
 

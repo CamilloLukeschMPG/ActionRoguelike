@@ -7,10 +7,10 @@
 #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "AI/SAICharacter.h"
 #include "SAttributeComponent.h"
-
 #include "Curves/CurveFloat.h"
-
 #include "EngineUtils.h"
+#include "DrawDebugHelpers.h"
+
 
 ASGameModeBase::ASGameModeBase()
 {
@@ -23,12 +23,28 @@ void ASGameModeBase::StartPlay()
 
 	FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &ASGameModeBase::SpawnBotTimerElapsed);
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, Delegate, SpawnTimerInterval, true);
-
-
 }
 
 void ASGameModeBase::SpawnBotTimerElapsed()
 {
+	int32 NrOfAliveBots = 0;
+	for (TActorIterator<ASAICharacter> It(GetWorld()); It; ++It)
+	{
+		ASAICharacter* Bot = *It;
+		if (USAttributeComponent::IsActorAlive(Bot))
+		{
+			NrOfAliveBots++;
+		}
+	}
+
+	float MaxBotCount = DifficultyCurve ? DifficultyCurve->GetFloatValue(GetWorld()->TimeSeconds) : 10.0f;
+
+	if (NrOfAliveBots >= MaxBotCount)
+	{
+		UE_LOG(LogTemp, Log, L"max bot count reached, skipping bot spawn.");
+		return;
+	}
+
 	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnBotQuery, this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
 	if (ensureMsgf(QueryInstance, L"Please set a bot spawning query in the game mode!"))
 	{
@@ -44,23 +60,7 @@ void ASGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryIn
 		return;
 	}
 
-	int32 NrOfAliveBots = 0;
-	for (TActorIterator<ASAICharacter> It(GetWorld()); It; ++It)
-	{
-		ASAICharacter* Bot = *It;
-		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(Bot->GetComponentByClass(USAttributeComponent::StaticClass()));
-		if (AttributeComp && AttributeComp->IsAlive())
-		{
-			NrOfAliveBots++;
-		}
-	}
 
-	float MaxBotCount = DifficultyCurve ? DifficultyCurve->GetFloatValue(GetWorld()->TimeSeconds) : 10.0f;
-
-	if (NrOfAliveBots >= MaxBotCount)
-	{
-		return;
-	}
 
 
 	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
@@ -70,6 +70,7 @@ void ASGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryIn
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		GetWorld()->SpawnActor<AActor>(MinionClass, Locations[0] + FVector(0.f,0.f, 50.0f), FRotator::ZeroRotator, SpawnParams);
+		DrawDebugSphere(GetWorld(), Locations[0] + FVector(0.f, 0.f, 50.0f), 50.f, 20, FColor::Blue, false, 60.f);
 	}
 
 }

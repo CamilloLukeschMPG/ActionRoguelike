@@ -30,10 +30,10 @@ void ASMagicProjectile::OnOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 	if (OtherActor && OtherActor != GetInstigator())
 	{
 		PlayImpactEffects();
-		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
+		USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(OtherActor);
 		if (AttributeComp)
 		{
-			AttributeComp->ApplyHealthChange(-DamageAmount);
+			AttributeComp->ApplyHealthChange(GetInstigator(),  -DamageAmount);
 
 			Destroy();
 		}

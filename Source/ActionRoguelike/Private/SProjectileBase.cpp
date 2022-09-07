@@ -29,6 +29,7 @@ ASProjectileBase::ASProjectileBase()
 	MovementComp->ProjectileGravityScale = 0.0f;
 
 	AudioComp = CreateDefaultSubobject<UAudioComponent>("AudioComp");
+	AudioComp->SetupAttachment(RootComponent);
 	AudioComp->bAutoActivate = true;
 }
 

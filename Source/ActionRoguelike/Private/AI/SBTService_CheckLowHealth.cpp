@@ -27,7 +27,7 @@ void USBTService_CheckLowHealth::TickNode(UBehaviorTreeComponent& OwnerComp, uin
 			APawn* Pawn = MyController->GetPawn();
 			if (ensure(Pawn))
 			{
-				USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(Pawn->GetComponentByClass(USAttributeComponent::StaticClass()));
+				USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(Pawn);
 				if (ensure(AttributeComp))
 				{
 					bool bShouldFindCover = AttributeComp->GetHealthPercentage() <= LowHealthPercentage;
