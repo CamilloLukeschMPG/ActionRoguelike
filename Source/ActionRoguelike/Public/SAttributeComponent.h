@@ -49,4 +49,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	float GetHealthPercentage() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	void Kill(AActor* Instigator);
 };

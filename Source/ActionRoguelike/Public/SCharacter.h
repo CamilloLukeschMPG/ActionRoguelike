@@ -18,6 +18,12 @@ class ACTIONROGUELIKE_API ASCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+public:
+	ASCharacter();
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(Exec)
+	void HealSelf(float HealAmount = 100.0f);
 protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Effects")
@@ -37,12 +43,6 @@ protected:
 
 	FTimerHandle TimerHandle_SpawnProjectile;
 
-public:
-	// Sets default values for this character's properties
-	ASCharacter();
-
-protected:
-
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
 
@@ -58,10 +58,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UParticleSystem* MuzzleFlashEffect;
 
-
-	// Called when the game starts or when spawned
 	virtual void PostInitializeComponents() override;
-	virtual void BeginPlay() override;
 
 	void MoveForward(float Value);
 	void MoveRight(float Value);
@@ -74,12 +71,5 @@ protected:
 
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 };

@@ -10,7 +10,7 @@
 #include "DrawDebugHelpers.h"
 #include "SAttributeComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-
+#include "SWorldUserWidget.h"
 
 // Sets default values
 ASAICharacter::ASAICharacter()
@@ -46,18 +46,29 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 {
 	if (Delta < 0.0f)
 	{
-		GetMesh()->SetScalarParameterValueOnMaterials("HitFlashTime", GetWorld()->TimeSeconds);
-		AAIController* AIC = Cast<AAIController>(GetController());
-
 		if (InstigatorActor != this)
 		{
 			SetTargetActor(InstigatorActor);
 		}
 
+		if (!ActiveHealthBar)
+		{
+			ActiveHealthBar = CreateWidget<USWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
+			if (ActiveHealthBar)
+			{
+				ActiveHealthBar->AttachedActor = this;
+				ActiveHealthBar->WorldOffset = FVector(0, 0, 20);
+				ActiveHealthBar->AddToViewport();
+			}
+		}
+
+		GetMesh()->SetScalarParameterValueOnMaterials("HitFlashTime", GetWorld()->TimeSeconds);
+
 
 		if (NewHealth <= 0.0f)
 		{
 			// stop BT
+			AAIController* AIC = Cast<AAIController>(GetController());
 			if (AIC)
 			{
 				AIC->GetBrainComponent()->StopLogic("Killed");
