@@ -10,11 +10,13 @@
 #include "Curves/CurveFloat.h"
 #include "EngineUtils.h"
 #include "DrawDebugHelpers.h"
+#include "SCharacter.h"
 
 
 ASGameModeBase::ASGameModeBase()
 {
 	SpawnTimerInterval = 2.0f;
+	PlayerRespawnDelay = 2.0f;
 }
 
 void ASGameModeBase::StartPlay()
@@ -36,6 +38,8 @@ void ASGameModeBase::KillAll()
 		}
 	}
 }
+
+
 
 void ASGameModeBase::SpawnBotTimerElapsed()
 {
@@ -72,9 +76,6 @@ void ASGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryIn
 		return;
 	}
 
-
-
-
 	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
 
 	if (Locations.Num())
@@ -85,4 +86,27 @@ void ASGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryIn
 		DrawDebugSphere(GetWorld(), Locations[0] + FVector(0.f, 0.f, 50.0f), 50.f, 20, FColor::Blue, false, 60.f);
 	}
 
+}
+
+void ASGameModeBase::RespawnPlayerElapsed(AController* Controller)
+{
+	if (ensure(Controller))
+	{
+		Controller->UnPossess();
+		RestartPlayer(Controller);
+	}
+}
+
+void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
+{
+	ASCharacter* Player = Cast<ASCharacter>(VictimActor);
+	if (Player)
+	{
+		FTimerHandle TimerHandle_RespawnDelay;
+
+		FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &ASGameModeBase::RespawnPlayerElapsed, Player->GetController());
+		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, PlayerRespawnDelay, false);
+	}
+
+	UE_LOG(LogTemp, Log, L"OnActorKilled: Victim: %s, Killer: %s", *GetNameSafe(VictimActor), *GetNameSafe(Killer));
 }
