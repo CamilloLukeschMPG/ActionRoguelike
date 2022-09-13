@@ -12,6 +12,7 @@ class USpringArmComponent;
 class USInteractionComponent;
 class UAnimMontage;
 class USAttributeComponent;
+class USActionComponent;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASCharacter : public ACharacter
@@ -29,34 +30,20 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Effects")
 	FName TimeToHitParamName;
 
-	UPROPERTY(VisibleAnywhere, Category = "Effects")
-	FName HandSocketName;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> AttackProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> DashProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	UAnimMontage* AttackAnim;
-
-	FTimerHandle TimerHandle_SpawnProjectile;
-
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USpringArmComponent* SpringArmComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UCameraComponent* CameraComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USInteractionComponent* InteractionComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USAttributeComponent* AttributeComp;
+	USActionComponent* ActionComp;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UParticleSystem* MuzzleFlashEffect;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USAttributeComponent* AttributeComp;
 
 	virtual void PostInitializeComponents() override;
 
@@ -65,9 +52,12 @@ protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 
+	void SprintStart();
+	void SprintStop();
+
 	void PrimaryAttack();
+	void BlackHoleAttack();
 	void Dash();
-	void SpawnProjectile_TimeElapsed(UClass* ProjectileClass);
 
 	void PrimaryInteract();
 

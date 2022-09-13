@@ -16,7 +16,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-
+#include "SActionComponent.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -29,13 +29,13 @@ ASCharacter::ASCharacter()
 	CameraComp->SetupAttachment(SpringArmComp);
 
 	InteractionComp = CreateDefaultSubobject<USInteractionComponent>("InteractionComp");
+	ActionComp = CreateDefaultSubobject<USActionComponent>("ActionComp");
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	bUseControllerRotationYaw = false;
-
-	HandSocketName = "Muzzle_01";
+	
 	TimeToHitParamName = "TimeToHit";
 }
 
@@ -70,57 +70,29 @@ void ASCharacter::MoveRight(float Value)
 	AddMovementInput(RightVector, Value);
 }
 
+void ASCharacter::SprintStart()
+{
+	ActionComp->StartActionByName(this, "Sprint");
+}
+
+void ASCharacter::SprintStop()
+{
+	ActionComp->StopActionByName(this, "Sprint");
+}
+
 void ASCharacter::PrimaryAttack()
 {
-	PlayAnimMontage(AttackAnim);
+	ActionComp->StartActionByName(this, "PrimaryAttack");
+}
 
-	FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &ASCharacter::SpawnProjectile_TimeElapsed, Cast<UClass>(AttackProjectileClass));
-	GetWorldTimerManager().SetTimer(TimerHandle_SpawnProjectile, Delegate, 0.2f, false);
+void ASCharacter::BlackHoleAttack()
+{
+	ActionComp->StartActionByName(this, "BlackHole");
 }
 
 void ASCharacter::Dash()
 {
-	PlayAnimMontage(AttackAnim);
-
-	FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &ASCharacter::SpawnProjectile_TimeElapsed, Cast<UClass>(DashProjectileClass));
-	GetWorldTimerManager().SetTimer(TimerHandle_SpawnProjectile, Delegate, 0.2f, false);
-}
-
-void ASCharacter::SpawnProjectile_TimeElapsed(UClass* ProjectileClass)
-{
-	FVector const HandLocation = GetMesh()->GetSocketLocation(HandSocketName);
-
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this);
-
-	FCollisionObjectQueryParams ObjectQueryParams;
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
-
-	FVector Start = CameraComp->GetComponentLocation();
-	FVector End = Start + (CameraComp->GetComponentRotation().Vector() * 5000.0f);
-
-	FHitResult Hit;
-	bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, Start, End, ObjectQueryParams, Params);
-
-	FVector Target = bBlockingHit ? Hit.ImpactPoint : End;
-
-	FRotator Rot = UKismetMathLibrary::Conv_VectorToRotator(Target - HandLocation);
-	FTransform const SpawnTM = FTransform(Rot, HandLocation);
-
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
-
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
-
-
-	UGameplayStatics::SpawnEmitterAttached(MuzzleFlashEffect, GetMesh(), HandSocketName);
-	//FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
-	//DrawDebugLine(GetWorld(), CameraComp->GetComponentLocation(), CameraComp->GetComponentLocation() + CameraComp->GetComponentRotation().Vector() * 100000.0f, LineColor, false, 4.0f, 0, 1.0f);
-	//DrawDebugLine(GetWorld(), HandLocation, HandLocation + CameraComp->GetComponentRotation().Vector() * 10000.0f, FColor::Yellow, false, 4.0f, 0, 2.0f);
-	//DrawDebugLine(GetWorld(), HandLocation, Target, FColor::White, false, 4.0f, 0, 2.0f);
+	ActionComp->StartActionByName(this, "Dash");
 }
 
 void ASCharacter::PrimaryInteract()
@@ -165,9 +137,13 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttack);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
+	PlayerInputComponent->BindAction("SecondaryAttack", IE_Pressed, this, &ASCharacter::BlackHoleAttack);
 	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ASCharacter::Dash);
+	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ASCharacter::SprintStart);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ASCharacter::SprintStop);
 }
 
 void ASCharacter::HealSelf(float HealAmount /* = 100 */)
