@@ -8,8 +8,13 @@
 #include "CollisionQueryParams.h"
 #include "SGameplayInterface.h"
 
+static TAutoConsoleVariable<bool> CVarDebugDrawInteraction(L"su.InteractionDebugDraw", false, L"Enable Debug Lines for Interact Component.", ECVF_Cheat);
+
+
 void USInteractionComponent::PrimaryInteract()
 {
+	bool const bDebugDraw = CVarDebugDrawInteraction.GetValueOnGameThread();
+
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 
@@ -35,6 +40,11 @@ void USInteractionComponent::PrimaryInteract()
 
 	for (FHitResult Hit : Hits)
 	{
+		if (bDebugDraw)
+		{
+			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
+		}
+
 		AActor* HitActor = Hit.GetActor();
 		if (HitActor)
 		{
@@ -46,12 +56,12 @@ void USInteractionComponent::PrimaryInteract()
 				break;
 			}
 		}
-
-		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
 	}
 
-	DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 2.0f);
-
+	if (bDebugDraw)
+	{
+		DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 2.0f);
+	}
 }
 
 

@@ -4,17 +4,14 @@
 #include "SMagicProjectile.h"
 
 #include "SAttributeComponent.h"
-#include "Components/SphereComponent.h"
+#include "SGameplayFunctionLibrary.h"
+#include "GameFramework/GameModeBase.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 
 
-
-// Sets default values
 ASMagicProjectile::ASMagicProjectile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
 	DamageAmount = 20.0f;
 }
 
@@ -29,12 +26,9 @@ void ASMagicProjectile::OnOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 {
 	if (OtherActor && OtherActor != GetInstigator())
 	{
-		PlayImpactEffects();
-		USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(OtherActor);
-		if (AttributeComp)
+		if (USGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
 		{
-			AttributeComp->ApplyHealthChange(GetInstigator(),  -DamageAmount);
-
+			PlayImpactEffects();
 			Destroy();
 		}
 	}

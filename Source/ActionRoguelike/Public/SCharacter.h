@@ -60,6 +60,8 @@ protected:
 
 	virtual void PostInitializeComponents() override;
 
+	virtual FVector GetPawnViewLocation() const override;
+
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 
