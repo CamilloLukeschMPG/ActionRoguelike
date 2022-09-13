@@ -27,6 +27,8 @@ ASAICharacter::ASAICharacter()
 
 	FindCoverHealthPercentage = 0.3f;
 	TimeToHitParamName = "TimeToHit";
+
+	CreditScoreBounty = 10;
 }
 
 void ASAICharacter::PostInitializeComponents()

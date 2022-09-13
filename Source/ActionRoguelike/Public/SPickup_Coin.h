@@ -4,26 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "SPickupBase.h"
-#include "SHealthPotion.generated.h"
+#include "SPickup_Coin.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ACTIONROGUELIKE_API ASHealthPotion : public ASPickupBase
+class ACTIONROGUELIKE_API ASPickup_Coin : public ASPickupBase
 {
 	GENERATED_BODY()
-
 public:
-	ASHealthPotion();
+
+	ASPickup_Coin();
 
 	void Interact_Implementation(APawn* InstigatorPawn);
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	float HealAmount;
-
 	UPROPERTY(EditAnywhere, Category = "Credits")
-	int32 CreditScoreCost;
+	int32 CreditScoreValue;
 };

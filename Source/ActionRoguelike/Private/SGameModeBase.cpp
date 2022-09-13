@@ -11,7 +11,7 @@
 #include "EngineUtils.h"
 #include "DrawDebugHelpers.h"
 #include "SCharacter.h"
-
+#include "SPlayerState.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(L"su.SpawnBots", true, L"Enable spawning of bots via timer.", ECVF_Cheat);
 
@@ -107,14 +107,21 @@ void ASGameModeBase::RespawnPlayerElapsed(AController* Controller)
 
 void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 {
-	ASCharacter* Player = Cast<ASCharacter>(VictimActor);
-	if (Player)
+	if (ASCharacter* Player = Cast<ASCharacter>(VictimActor))
 	{
 		FTimerHandle TimerHandle_RespawnDelay;
 
 		FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &ASGameModeBase::RespawnPlayerElapsed, Player->GetController());
 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, PlayerRespawnDelay, false);
 	}
+	else if (ASAICharacter* NPC = Cast<ASAICharacter>(VictimActor))
+	{
+		if (ASPlayerState* PlayerState = ASPlayerState::GetPlayerStateFromActor(Killer))
+		{
+			PlayerState->ApplyCreditScoreChange(this, NPC->CreditScoreBounty);
+		}
+	}
+
 
 	UE_LOG(LogTemp, Log, L"OnActorKilled: Victim: %s, Killer: %s", *GetNameSafe(VictimActor), *GetNameSafe(Killer));
 }

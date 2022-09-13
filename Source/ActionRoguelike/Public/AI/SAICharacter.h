@@ -20,6 +20,8 @@ public:
 	// Sets default values for this character's properties
 	ASAICharacter();
 
+	UPROPERTY(EditAnywhere, Category = "Credits")
+	int32 CreditScoreBounty;
 protected:
 
 	USWorldUserWidget* ActiveHealthBar;

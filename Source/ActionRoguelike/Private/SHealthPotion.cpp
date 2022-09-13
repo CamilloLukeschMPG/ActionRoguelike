@@ -3,23 +3,30 @@
 
 #include "SHealthPotion.h"
 #include "SAttributeComponent.h"
+#include "SPlayerState.h"
+#include "GameFramework/Pawn.h"
 
 ASHealthPotion::ASHealthPotion()
 {
 	HealAmount = 20.0f;
+	CreditScoreCost = 15;
 }
 
 void ASHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 {
 	ensure(InstigatorPawn);
-	AActor* OtherActor = Cast<AActor>(InstigatorPawn);
-	USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(OtherActor);
 
-	if (AttributeComp)
+	ASPlayerState* PlayerState = ASPlayerState::GetPlayerStateFromActor(InstigatorPawn);
+
+	if (PlayerState->GetCreditScore() >= CreditScoreCost)
 	{
-		if (AttributeComp->ApplyHealthChange(this, HealAmount))
+		if (USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(InstigatorPawn))
 		{
-			TriggerPickupTimer();
+			if (AttributeComp->ApplyHealthChange(this, HealAmount))
+			{
+				PlayerState->ApplyCreditScoreChange(this, -CreditScoreCost);
+				TriggerPickupTimer();
+			}
 		}
 	}
 }
