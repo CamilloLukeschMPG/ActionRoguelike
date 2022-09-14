@@ -20,7 +20,6 @@ public:
 
 	virtual void StartAction_Implementation(AActor* InstigatorActor) override;
 
-
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
@@ -40,7 +39,5 @@ protected:
 
 	UFUNCTION()
 	void AttackDelay_Elapsed(ACharacter* InstigatorCharacter);
-
-
 
 };

@@ -56,7 +56,7 @@ void ASProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAct
 
 void ASProjectileBase::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	ensure(false);
+	//ensure(false);
 }
 
 void ASProjectileBase::PlayImpactEffects()

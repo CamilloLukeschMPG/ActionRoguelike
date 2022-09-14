@@ -13,12 +13,14 @@
 #include "SWorldUserWidget.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "SActionComponent.h"
 
 // Sets default values
 ASAICharacter::ASAICharacter()
 {
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
+	ActionComp = CreateDefaultSubobject<USActionComponent>("ActionComp");
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
@@ -65,7 +67,6 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 			if (ActiveHealthBar)
 			{
 				ActiveHealthBar->AttachedActor = this;
-				ActiveHealthBar->WorldOffset = FVector(0, 0, 20);
 				ActiveHealthBar->AddToViewport();
 			}
 		}
