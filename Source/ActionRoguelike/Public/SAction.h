@@ -15,6 +15,10 @@ class ACTIONROGUELIKE_API USAction : public UObject
 	GENERATED_BODY()
 
 public:
+
+	UPROPERTY(EditDefaultsOnly, Category = "Action")
+	bool bAutoStart;
+
 	UFUNCTION(BlueprintCallable)
 	UWorld* GetWorld() const override;
 
@@ -32,8 +36,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
 	FName ActionName;
-
-
 
 protected:
 

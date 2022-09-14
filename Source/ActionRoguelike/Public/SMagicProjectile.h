@@ -8,9 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "SMagicProjectile.generated.h"
 
-class USphereComponent;
-class UProjectileMovementComponent;
-class UParticleSystemComponent;
+class USActionEffect;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASMagicProjectile : public ASProjectileBase
@@ -33,5 +31,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")
 	FGameplayTag ParryTag;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Tags")
+	TSubclassOf<USActionEffect> BurningActionClass;
 
 };
