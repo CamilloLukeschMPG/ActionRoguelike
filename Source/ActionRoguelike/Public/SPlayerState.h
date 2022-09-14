@@ -7,7 +7,7 @@
 #include "SPlayerState.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCreditScoreChanged, AActor*, InstigatorActor, int32, NewCreditScore, int32, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCreditScoreChanged, ASPlayerState*, PlayerState, int32, NewCreditScore, int32, Delta);
 
 
 UCLASS()

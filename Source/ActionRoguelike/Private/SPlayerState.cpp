@@ -3,6 +3,7 @@
 
 #include "SPlayerState.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/PlayerController.h"
 
 
 ASPlayerState::ASPlayerState()
@@ -15,6 +16,10 @@ ASPlayerState* ASPlayerState::GetPlayerStateFromActor(AActor* FromActor)
 	if (ACharacter* Character = Cast<ACharacter>(FromActor))
 	{
 		return Cast<ASPlayerState>(Character->GetPlayerState());
+	}
+	else if (APlayerController* Controller = Cast<APlayerController>(FromActor))
+	{
+		return Controller->GetPlayerState<ASPlayerState>();
 	}
 
 	return nullptr;
@@ -29,7 +34,7 @@ bool ASPlayerState::ApplyCreditScoreChange(AActor* InstigatorActor, int32 Delta)
 
 	CreditScore += Delta;
 
-	OnCreditScoreChanged.Broadcast(InstigatorActor, CreditScore, Delta);
+	OnCreditScoreChanged.Broadcast(this, CreditScore, Delta);
 	return true;
 }
 
