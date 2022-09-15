@@ -30,7 +30,7 @@ EBTNodeResult::Type USBTTask_HealSelf::ExecuteTask(UBehaviorTreeComponent& Owner
 
 		if (ensureMsgf(AttributeComp, L"Heal task can't find AttributeComponent on Character!"))
 		{
-			AttributeComp->ApplyHealthChange(MyPawn, AttributeComp->MaxHealth * HealPercentage);
+			AttributeComp->ApplyHealthChange(MyPawn, AttributeComp->GetMaxHealth() * HealPercentage);
 			DrawDebugString(GetWorld(), AttributeComp->GetOwner()->GetActorLocation(), "Healing!", nullptr, FColor::White, 4.0f, true);
 
 			return EBTNodeResult::Succeeded;

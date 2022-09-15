@@ -23,6 +23,11 @@ void USAction::StopAction_Implementation(AActor* InstigatorActor)
 	bIsRunning = false;
 }
 
+bool USAction::CanStart_Implementation(AActor* InstigatorActor)
+{
+	return !IsRunning() && !GetOwningComponent()->ActiveGameplayTags.HasAny(BlockedTags);
+}
+
 UWorld* USAction::GetWorld() const
 {
 	if (UActorComponent* Comp = Cast<UActorComponent>(GetOuter()))
@@ -33,10 +38,6 @@ UWorld* USAction::GetWorld() const
 	return nullptr;
 }
 
-bool USAction::CanStart_Implementation(AActor* InstigatorActor)
-{
-	return !IsRunning() && !GetOwningComponent()->ActiveGameplayTags.HasAny(BlockedTags);
-}
 
 bool USAction::IsRunning() const
 {

@@ -16,6 +16,8 @@ USAttributeComponent::USAttributeComponent()
 {
 	MaxHealth = 100.0f;
 	Health = MaxHealth;
+	Rage = 0;
+	MaxRage = 100.f;
 }
 
 
@@ -29,6 +31,7 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	if (Delta < 0.0f)
 	{
 		Delta *= CVarDamageMultiplier.GetValueOnGameThread();
+		ApplyRageChange(InstigatorActor, -Delta);
 	}
 
 	float OldHealth = Health;
@@ -46,6 +49,22 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 			GM->OnActorKilled(GetOwner(), InstigatorActor);
 		}
 	}
+
+	return ActualDelta != 0;
+}
+
+bool USAttributeComponent::ApplyRageChange(AActor* InstigatorActor, float Delta)
+{
+	if (Rage + Delta < 0.0f)
+	{
+		return false;
+	}
+
+	float OldRage = Rage;
+
+	Rage = FMath::Clamp(Rage + Delta, 0.0f, MaxRage);
+	float ActualDelta = Rage - OldRage;
+	OnRageChanged.Broadcast(InstigatorActor, this, Rage, ActualDelta);
 
 	return ActualDelta != 0;
 }
@@ -81,3 +100,24 @@ bool USAttributeComponent::IsActorAlive(AActor* FromActor)
 
 	return Comp ? Comp->IsAlive() : false;
 }
+
+float USAttributeComponent::GetHealth() const
+{
+	return Health;
+}
+
+float USAttributeComponent::GetMaxHealth() const
+{
+	return MaxHealth;
+}
+
+float USAttributeComponent::GetRage() const
+{
+	return Rage;
+}
+
+float USAttributeComponent::GetRagePercentage() const
+{
+	return Rage / MaxRage;
+}
+
