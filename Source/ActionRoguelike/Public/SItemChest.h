@@ -22,6 +22,12 @@ public:
 
 protected:
 
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing="OnRep_LidOpened")
+	bool bLidOpened;
+
+	UFUNCTION()
+	void OnRep_LidOpened();
+
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* BaseMesh;
 
@@ -30,6 +36,7 @@ protected:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:	
 	// Called every frame

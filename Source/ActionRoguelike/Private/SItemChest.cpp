@@ -5,13 +5,7 @@
 
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/Pawn.h"
-
-
-void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
-{
-	LidMesh->SetRelativeRotation(FRotator(TargetPitch, 0.0f, 0.0f));
-	TargetPitch = TargetPitch ? 110.f : 0.f;
-}
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ASItemChest::ASItemChest()
@@ -26,7 +20,30 @@ ASItemChest::ASItemChest()
 	LidMesh->SetupAttachment(BaseMesh);
 
 	TargetPitch = 110.0f;
+
+	SetReplicates(true);
 }
+
+
+void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
+{
+	bLidOpened = !bLidOpened;
+	OnRep_LidOpened();
+}
+
+void ASItemChest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASItemChest, bLidOpened);
+}
+
+void ASItemChest::OnRep_LidOpened()
+{
+	float const Pitch = bLidOpened ? TargetPitch : 0.0f;
+	LidMesh->SetRelativeRotation(FRotator(Pitch, 0.0f, 0.0f));
+}
+
 
 // Called when the game starts or when spawned
 void ASItemChest::BeginPlay()

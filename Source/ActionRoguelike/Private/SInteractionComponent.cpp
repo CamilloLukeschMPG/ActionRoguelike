@@ -22,14 +22,19 @@ USInteractionComponent::USInteractionComponent()
 
 void USInteractionComponent::PrimaryInteract()
 {
-	if (!FocusedActor)
+	ServerInteract(FocusedActor);
+}
+
+void USInteractionComponent::ServerInteract_Implementation(AActor* InFocus)
+{
+	if (!InFocus)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "No Focus Actor to interact.");
 		return;
 	}
 
 	APawn* MyPawn = Cast<APawn>(GetOwner());
-	ISGameplayInterface::Execute_Interact(FocusedActor, MyPawn);
+	ISGameplayInterface::Execute_Interact(InFocus, MyPawn);
 }
 
 void USInteractionComponent::FindBestInteractable()
@@ -58,7 +63,7 @@ void USInteractionComponent::FindBestInteractable()
 	{
 		if (bDebugDraw)
 		{
-			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, TraceRadius, 32, LineColor, false, 2.0f);
+			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, TraceRadius, 32, LineColor, false, 0.0f);
 		}
 
 		AActor* HitActor = Hit.GetActor();
@@ -100,7 +105,7 @@ void USInteractionComponent::FindBestInteractable()
 
 	if (bDebugDraw)
 	{
-		DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 2.0f);
+		DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 0.0f, 0, 2.0f);
 	}
 }
 
@@ -113,6 +118,10 @@ void USInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FindBestInteractable();
+	APawn const* const MyPawn = Cast<APawn>(GetOwner());
+	if (MyPawn->IsLocallyControlled())
+	{
+		FindBestInteractable();
+	}
 }
 

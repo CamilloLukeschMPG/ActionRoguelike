@@ -36,9 +36,10 @@ void USActionEffect_Buff_Thorns::StopAction_Implementation(AActor* Instigator)
 
 void USActionEffect_Buff_Thorns::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
-	if (Delta < 0.0f)
+	AActor* Owner = OwningComp->GetOwner();
+	if (Delta < 0.0f && Owner != InstigatorActor)
 	{
 		auto* InstigatorAttributeComp = USAttributeComponent::GetAttributes(InstigatorActor);
-		InstigatorAttributeComp->ApplyHealthChange(OwningComp->GetOwner(), float(int32((Delta * DamageReflectFactor) + 0.5f)));
+		InstigatorAttributeComp->ApplyHealthChange(Owner, float(int32((Delta * DamageReflectFactor) + 0.5f)));
 	}
 }
