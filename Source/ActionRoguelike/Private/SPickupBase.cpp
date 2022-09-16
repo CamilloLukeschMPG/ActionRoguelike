@@ -15,6 +15,8 @@ ASPickupBase::ASPickupBase()
 	RootComponent = MeshComp;
 
 	RespawnTime = 10.0f;
+
+	SetReplicates(true);
 }
 
 void ASPickupBase::TriggerPickupTimer()

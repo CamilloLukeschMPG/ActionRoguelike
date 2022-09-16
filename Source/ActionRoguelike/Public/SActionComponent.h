@@ -21,17 +21,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
 	FGameplayTagContainer ActiveGameplayTags;
 
-protected:
-
-	UPROPERTY(EditAnywhere, Category = "Actions")
-	TArray<TSubclassOf<USAction>> DefaultActions;
-
-	UPROPERTY()
-	TArray<USAction*> Actions;
-	
-	virtual void BeginPlay() override;
-
-public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
@@ -45,5 +34,19 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	bool StopActionByName(AActor* Instigator, FName ActionName);
+
+protected:
+
+	UPROPERTY(EditAnywhere, Category = "Actions")
+	TArray<TSubclassOf<USAction>> DefaultActions;
+
+	UPROPERTY()
+	TArray<USAction*> Actions;
+	
+	virtual void BeginPlay() override;
+
+	UFUNCTION(Server, Reliable)
+	void ServerStartAction(AActor* Instigator, FName ActionName);
+
 
 };

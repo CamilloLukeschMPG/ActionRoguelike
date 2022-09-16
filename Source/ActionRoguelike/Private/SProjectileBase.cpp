@@ -31,6 +31,8 @@ ASProjectileBase::ASProjectileBase()
 	AudioComp = CreateDefaultSubobject<UAudioComponent>("AudioComp");
 	AudioComp->SetupAttachment(RootComponent);
 	AudioComp->bAutoActivate = true;
+
+	SetReplicates(true);
 }
 
 void ASProjectileBase::BeginPlay()
