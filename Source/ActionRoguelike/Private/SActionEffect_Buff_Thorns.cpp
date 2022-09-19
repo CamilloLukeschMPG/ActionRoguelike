@@ -2,6 +2,8 @@
 
 
 #include "SActionEffect_Buff_Thorns.h"
+
+#include "SActionComponent.h"
 #include "SAttributeComponent.h"
 
 USActionEffect_Buff_Thorns::USActionEffect_Buff_Thorns()
@@ -15,7 +17,7 @@ void USActionEffect_Buff_Thorns::StartAction_Implementation(AActor* Instigator)
 {
 	Super::StartAction_Implementation(Instigator);
 
-	auto* Comp = USAttributeComponent::GetAttributes(Instigator);
+	auto* Comp = USAttributeComponent::GetAttributes(GetOwningComponent()->GetOwner());
 	if (ensure(Comp))
 	{
 		Comp->OnHealthChanged.AddDynamic(this, &USActionEffect_Buff_Thorns::OnHealthChanged);
@@ -27,7 +29,7 @@ void USActionEffect_Buff_Thorns::StopAction_Implementation(AActor* Instigator)
 {
 	Super::StopAction_Implementation(Instigator);
 
-	auto* Comp = USAttributeComponent::GetAttributes(Instigator);
+	auto* Comp = USAttributeComponent::GetAttributes(GetOwningComponent()->GetOwner());
 	if (ensure(Comp))
 	{
 		Comp->OnHealthChanged.RemoveDynamic(this, &USActionEffect_Buff_Thorns::OnHealthChanged);

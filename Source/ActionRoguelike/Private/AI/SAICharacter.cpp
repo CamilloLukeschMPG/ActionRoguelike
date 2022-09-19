@@ -48,8 +48,11 @@ void ASAICharacter::BeginPlay()
 
 void ASAICharacter::OnPawnSeen(APawn* Pawn)
 {
-	SetTargetActor(Pawn);
-	DrawDebugString(GetWorld(), GetActorLocation(), "Player Spotted", nullptr, FColor::White, 4.0f, true);
+	if (GetTargetActor() != Pawn)
+	{
+		SetTargetActor(Pawn);
+		DrawDebugString(GetWorld(), GetActorLocation(), "Player Spotted", nullptr, FColor::White, 4.0f, true);
+	}
 }
 
 void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
@@ -94,6 +97,19 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 			SetLifeSpan(10.f);
 		}
 	}
+}
+
+AActor* ASAICharacter::GetTargetActor()
+{
+	AAIController* AIC = Cast<AAIController>(GetController());
+	if (AIC)
+	{
+		UObject* Obj = AIC->GetBlackboardComponent()->GetValueAsObject("TargetActor");
+		ensure(Obj);
+		return Cast<AActor>(Obj);
+	}
+
+	return nullptr;
 }
 
 void ASAICharacter::SetTargetActor(AActor* NewTarget)

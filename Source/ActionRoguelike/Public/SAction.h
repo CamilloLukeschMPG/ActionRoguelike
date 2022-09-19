@@ -16,6 +16,8 @@ class ACTIONROGUELIKE_API USAction : public UObject
 
 public:
 
+	void Initialize(USActionComponent* NewActionComp);
+
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
 	bool bAutoStart;
 
@@ -37,18 +39,28 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
 	FName ActionName;
 
+
+	virtual bool IsSupportedForNetworking() const override { return true; }
+
 protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	USActionComponent* GetOwningComponent() const;
 
 	//Action can only start if OwningActor has none of these Tags applied
-	UPROPERTY(EditDefaultsOnly, Category = "Tags")
+	UPROPERTY(EditDefaultsOnly, Category = "Action")
 	FGameplayTagContainer GrantsTags;
 
 	//Tags added to owning actor when activated, removed when action stops
-	UPROPERTY(EditDefaultsOnly, Category = "Tags")
+	UPROPERTY(EditDefaultsOnly, Category = "Action")
 	FGameplayTagContainer BlockedTags;
 
+	UPROPERTY(ReplicatedUsing="OnRep_IsRunning")
 	bool bIsRunning;
+
+	UPROPERTY(Replicated)
+	USActionComponent* ActionComp;
+
+	UFUNCTION()
+	void OnRep_IsRunning();
 };

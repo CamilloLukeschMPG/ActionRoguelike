@@ -23,6 +23,8 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Credits")
 	int32 CreditScoreBounty;
+
+
 protected:
 
 	USWorldUserWidget* ActiveHealthBar;
@@ -54,6 +56,7 @@ protected:
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
 
+	AActor* GetTargetActor();
 	void SetTargetActor(AActor* NewTarget);
 
 };
