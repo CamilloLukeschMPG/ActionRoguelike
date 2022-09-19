@@ -62,21 +62,22 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = "Attributes")
-		float MaxHealth;
+	float MaxHealth;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = "Attributes")
-		float Health;
+	float Health;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
-		float MaxRage;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = "Attributes")
+	float MaxRage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
-		float Rage;
-
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = "Attributes")
+	float Rage;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastHealthChanged(AActor* InstigatorActor, float NewHealth, float Delta);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRageChanged(AActor* InstigatorActor, float NewRage, float Delta);
 
 };
 

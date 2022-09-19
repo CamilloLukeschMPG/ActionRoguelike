@@ -2,8 +2,10 @@
 
 
 #include "SPickupBase.h"
+
 #include "Components/StaticMeshComponent.h"
 #include "TimerManager.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ASPickupBase::ASPickupBase()
@@ -17,6 +19,8 @@ ASPickupBase::ASPickupBase()
 	RespawnTime = 10.0f;
 
 	SetReplicates(true);
+
+	bIsActive = true;
 }
 
 void ASPickupBase::TriggerPickupTimer()
@@ -24,12 +28,29 @@ void ASPickupBase::TriggerPickupTimer()
 	FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &ASPickupBase::Respawn);
 	GetWorldTimerManager().SetTimer(TimerHandle_Respawn, Delegate, RespawnTime, false);
 
-	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	MeshComp->SetVisibility(false);
+	SetIsActive(false);
 }
 
 void ASPickupBase::Respawn()
 {
-	MeshComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	MeshComp->SetVisibility(true);
+	SetIsActive(true);
+}
+
+void ASPickupBase::SetIsActive(bool IsActive)
+{
+	MeshComp->SetCollisionEnabled(IsActive ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
+	MeshComp->SetVisibility(IsActive);
+	bIsActive = IsActive;
+}
+
+void ASPickupBase::OnRep_IsActive()
+{
+	SetIsActive(bIsActive);
+}
+
+void ASPickupBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASPickupBase, bIsActive);
 }

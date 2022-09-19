@@ -27,4 +27,12 @@ protected:
 
 	void TriggerPickupTimer();
 	void Respawn();
+
+	UPROPERTY(ReplicatedUsing="OnRep_IsActive")
+	bool bIsActive;
+
+	void SetIsActive(bool IsActive);
+
+	UFUNCTION()
+	void OnRep_IsActive();
 };

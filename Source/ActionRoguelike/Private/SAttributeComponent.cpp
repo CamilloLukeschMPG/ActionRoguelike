@@ -43,7 +43,7 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
 	if (ActualDelta != 0)
 	{
-		MulticastHealthChanged(InstigatorActor, Health, Delta);
+		MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
 	}
 
 	//DIEDED
@@ -71,6 +71,10 @@ bool USAttributeComponent::ApplyRageChange(AActor* InstigatorActor, float Delta)
 	Rage = FMath::Clamp(Rage + Delta, 0.0f, MaxRage);
 	float ActualDelta = Rage - OldRage;
 	OnRageChanged.Broadcast(InstigatorActor, this, Rage, ActualDelta);
+	if (ActualDelta != 0)
+	{
+		MulticastRageChanged(InstigatorActor, Rage, ActualDelta);
+	}
 
 	return ActualDelta != 0;
 }
@@ -133,6 +137,8 @@ void USAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 
 	DOREPLIFETIME(USAttributeComponent, Health);
 	DOREPLIFETIME(USAttributeComponent, MaxHealth);
+	DOREPLIFETIME(USAttributeComponent, Rage);
+	DOREPLIFETIME(USAttributeComponent, MaxRage);
 	//DOREPLIFETIME_CONDITION(USAttributeComponent, MaxHealth, COND_OwnerOnly);
 
 }
@@ -140,4 +146,9 @@ void USAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 void USAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewHealth, float Delta)
 {
 	OnHealthChanged.Broadcast(InstigatorActor, this, NewHealth, Delta);
+}
+
+void USAttributeComponent::MulticastRageChanged_Implementation(AActor* InstigatorActor, float NewRage, float Delta)
+{
+	OnRageChanged.Broadcast(InstigatorActor, this, NewRage, Delta);
 }
