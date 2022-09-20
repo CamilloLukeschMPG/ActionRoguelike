@@ -14,22 +14,22 @@ void USAction::Initialize(USActionComponent* NewActionComp)
 
 void USAction::StartAction_Implementation(AActor* InstigatorActor)
 {
-	//UE_LOG(LogTemp, Log, L"Started: %s", *GetNameSafe(this));
-	LogOnScreen(this, FString::Printf(L"Started: %s", *ActionName.ToString()), FColor::Green);
+	UE_LOG(LogTemp, Log, L"Started: %s", *GetNameSafe(this));
+	//LogOnScreen(this, FString::Printf(L"Started: %s", *ActionName.ToString()), FColor::Green);
 
 	GetOwningComponent()->ActiveGameplayTags.AppendTags(GrantsTags);
-	bIsRunning = true;
+	RepData = { true, InstigatorActor };
 }
 
 void USAction::StopAction_Implementation(AActor* InstigatorActor)
 {
-	//UE_LOG(LogTemp, Log, L"Stopped: %s", *GetNameSafe(this));
-	LogOnScreen(this, FString::Printf(L"Stopped: %s", *ActionName.ToString()), FColor::White);
+	UE_LOG(LogTemp, Log, L"Stopped: %s", *GetNameSafe(this));
+	//LogOnScreen(this, FString::Printf(L"Stopped: %s", *ActionName.ToString()), FColor::White);
 
 	//ensureAlways(bIsRunning);
 
 	GetOwningComponent()->ActiveGameplayTags.RemoveTags(GrantsTags);
-	bIsRunning = false;
+	RepData = { false, InstigatorActor };
 }
 
 bool USAction::CanStart_Implementation(AActor* InstigatorActor)
@@ -52,7 +52,7 @@ UWorld* USAction::GetWorld() const
 
 bool USAction::IsRunning() const
 {
-	return bIsRunning;
+	return RepData.bIsRunning;
 }
 
 USActionComponent* USAction::GetOwningComponent() const
@@ -60,15 +60,15 @@ USActionComponent* USAction::GetOwningComponent() const
 	return ActionComp;
 }
 
-void USAction::OnRep_IsRunning()
+void USAction::OnRep_RepData()
 {
-	if (bIsRunning)
+	if (RepData.bIsRunning)
 	{
-		StartAction(nullptr);
+		StartAction(RepData.Instigator);
 	}
 	else
 	{
-		StopAction(nullptr);
+		StopAction(RepData.Instigator);
 	}
 }
 
@@ -76,6 +76,6 @@ void USAction::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(USAction, bIsRunning);
+	DOREPLIFETIME(USAction, RepData);
 	DOREPLIFETIME(USAction, ActionComp);
 }
