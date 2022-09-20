@@ -2,10 +2,12 @@
 
 
 #include "SPlayerState.h"
+
 #include "GameFramework/Character.h"
 #include "GameFramework/PlayerController.h"
-#include "Net/UnrealNetwork.h"
 #include "ActionRoguelike/ActionRoguelike.h"
+#include "Net/UnrealNetwork.h"
+#include "SSaveGame.h"
 
 ASPlayerState::ASPlayerState()
 {
@@ -46,6 +48,22 @@ bool ASPlayerState::ApplyCreditScoreChange(AActor* InstigatorActor, int32 Delta)
 int32 ASPlayerState::GetCreditScore() const
 {
 	return CreditScore;
+}
+
+void ASPlayerState::SavePlayerState_Implementation(USSaveGame* SaveObject)
+{
+	if (SaveObject)
+	{
+		SaveObject->CreditScore = CreditScore;
+	}
+}
+
+void ASPlayerState::LoadPlayerState_Implementation(USSaveGame* SaveObject)
+{
+	if (SaveObject)
+	{
+		CreditScore = SaveObject->CreditScore;
+	}
 }
 
 void ASPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

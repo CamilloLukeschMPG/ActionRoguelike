@@ -10,6 +10,7 @@
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class UCurveFloat;
+class USSaveGame;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASGameModeBase : public AGameModeBase
@@ -18,6 +19,11 @@ class ACTIONROGUELIKE_API ASGameModeBase : public AGameModeBase
 
 
 protected:
+
+	FString SlotName;
+
+	UPROPERTY()
+	USSaveGame* CurrentSaveGame;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 	float PlayerRespawnDelay;
@@ -47,11 +53,22 @@ protected:
 public:
 	ASGameModeBase();
 
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+
+
 	virtual void StartPlay() override;
+
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+
 
 	UFUNCTION(Exec)
 	void KillAll();
 
 	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
 
+
+	UFUNCTION(BlueprintCallable, Category = "SaveGame")
+	void WriteSaveGame();
+
+	void LoadSaveGame();
 };
