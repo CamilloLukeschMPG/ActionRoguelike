@@ -11,10 +11,12 @@
 #include "EngineUtils.h"
 #include "DrawDebugHelpers.h"
 #include "SCharacter.h"
+#include "SGameplayInterface.h"
 #include "SPlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "SSaveGame.h"
 #include "GameFramework/GameStateBase.h"
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(L"su.SpawnBots", true, L"Enable spawning of bots via timer.", ECVF_Cheat);
 
@@ -164,6 +166,29 @@ void ASGameModeBase::WriteSaveGame()
 		}
 	}
 
+	CurrentSaveGame->SavedActors.Empty();
+
+	for (FActorIterator It(GetWorld()); It; ++It)
+	{
+		AActor* Actor = *It;
+
+		if (!Actor->Implements<USGameplayInterface>())
+		{
+			continue;
+		}
+
+		FActorSaveData ActorData = { Actor->GetName(), Actor->GetActorTransform() };
+
+		FMemoryWriter MemWriter(ActorData.ByteData);
+
+		FObjectAndNameAsStringProxyArchive Ar(MemWriter, true);
+		Ar.ArIsSaveGame = true;
+		Actor->Serialize(Ar);
+
+		CurrentSaveGame->SavedActors.Add(ActorData);
+	}
+
+
 	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SlotName, 0);
 }
 
@@ -175,9 +200,36 @@ void ASGameModeBase::LoadSaveGame()
 		if (!CurrentSaveGame)
 		{
 			UE_LOG(LogTemp, Warning, L"Failed to load SaveGame Data.");
+			return;
 		}
 
 		UE_LOG(LogTemp, Log, L"Loaded SaveGame Data.");
+
+		for (FActorIterator It(GetWorld()); It; ++It)
+		{
+			AActor* Actor = *It;
+
+			if (!Actor->Implements<USGameplayInterface>())
+			{
+				continue;
+			}
+			
+			for (FActorSaveData ActorData : CurrentSaveGame->SavedActors)
+			{
+				if (ActorData.ActorName == Actor->GetName())
+				{
+					Actor->SetActorTransform(ActorData.Transform);
+
+					FMemoryReader MemReader(ActorData.ByteData);
+					FObjectAndNameAsStringProxyArchive Ar(MemReader, true);
+					Ar.ArIsSaveGame = true;
+					Actor->Serialize(Ar);
+
+					ISGameplayInterface::Execute_OnActorLoaded(Actor);
+					break;
+				}
+			}
+		}
 	}
 	else
 	{

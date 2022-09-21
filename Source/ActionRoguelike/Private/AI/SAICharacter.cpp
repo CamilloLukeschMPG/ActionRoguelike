@@ -104,9 +104,7 @@ AActor* ASAICharacter::GetTargetActor()
 	AAIController* AIC = Cast<AAIController>(GetController());
 	if (AIC)
 	{
-		UObject* Obj = AIC->GetBlackboardComponent()->GetValueAsObject("TargetActor");
-		ensure(Obj);
-		return Cast<AActor>(Obj);
+		return Cast<AActor>(AIC->GetBlackboardComponent()->GetValueAsObject("TargetActor"));
 	}
 
 	return nullptr;
