@@ -41,13 +41,18 @@ bool ASPlayerState::ApplyCreditScoreChange(AActor* InstigatorActor, int32 Delta)
 
 	ensure(!GetWorld()->IsNetMode(NM_Client));
 	OnCreditScoreChanged.Broadcast(this, CreditScore, Delta);
-	MulticastCreditScoreChanged(CreditScore, Delta);
+	//MulticastCreditScoreChanged(CreditScore, Delta);
 	return true;
 }
 
 int32 ASPlayerState::GetCreditScore() const
 {
 	return CreditScore;
+}
+
+void ASPlayerState::OnRep_Credits(int32 OldCreditScore)
+{
+	OnCreditScoreChanged.Broadcast(this, CreditScore, CreditScore - OldCreditScore);
 }
 
 void ASPlayerState::SavePlayerState_Implementation(USSaveGame* SaveObject)
@@ -62,7 +67,8 @@ void ASPlayerState::LoadPlayerState_Implementation(USSaveGame* SaveObject)
 {
 	if (SaveObject)
 	{
-		CreditScore = SaveObject->CreditScore;
+		ApplyCreditScoreChange(this, SaveObject->CreditScore - CreditScore);
+		//CreditScore = SaveObject->CreditScore;
 	}
 }
 
@@ -73,8 +79,9 @@ void ASPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(ASPlayerState, CreditScore);
 }
 
-void ASPlayerState::MulticastCreditScoreChanged_Implementation(float NewCreditScore, float Delta)
-{
-	LogOnScreen(this, FString::Printf(L"Broadcasting Credit score change on: %s", *GetNameSafe(this)), FColor::Orange);
-	OnCreditScoreChanged.Broadcast(this, NewCreditScore, Delta);
-}
+
+//void ASPlayerState::MulticastCreditScoreChanged_Implementation(float NewCreditScore, float Delta)
+//{
+//	LogOnScreen(this, FString::Printf(L"Broadcasting Credit score change on: %s", *GetNameSafe(this)), FColor::Orange);
+//	OnCreditScoreChanged.Broadcast(this, NewCreditScore, Delta);
+//}

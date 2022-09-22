@@ -55,6 +55,16 @@ void ASAICharacter::OnPawnSeen(APawn* Pawn)
 	}
 }
 
+void ASAICharacter::MulticastOnPawnSeen_Implementation()
+{
+	USWorldUserWidget* NewWidget = CreateWidget<USWorldUserWidget>(GetWorld(), SpottedWidgetClass);
+	if (NewWidget)
+	{
+		NewWidget->AttachedActor = this;
+		NewWidget->AddToViewport(10);
+	}
+}
+
 void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
 	if (Delta < 0.0f)

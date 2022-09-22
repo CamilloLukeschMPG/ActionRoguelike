@@ -39,10 +39,13 @@ public:
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Credits")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing="OnRep_Credits", Category = "Credits")
 	int32 CreditScore;
 
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastCreditScoreChanged(float NewCreditScore, float Delta);
+	UFUNCTION()
+	void OnRep_Credits(int32 OldCreditScore);
+
+	//UFUNCTION(NetMulticast, Reliable)
+	//void MulticastCreditScoreChanged(float NewCreditScore, float Delta);
 
 };

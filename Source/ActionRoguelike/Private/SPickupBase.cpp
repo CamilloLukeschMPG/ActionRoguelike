@@ -38,14 +38,14 @@ void ASPickupBase::Respawn()
 
 void ASPickupBase::SetIsActive(bool IsActive)
 {
-	MeshComp->SetCollisionEnabled(IsActive ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
-	MeshComp->SetVisibility(IsActive);
 	bIsActive = IsActive;
+	OnRep_IsActive();
 }
 
 void ASPickupBase::OnRep_IsActive()
 {
-	SetIsActive(bIsActive);
+	MeshComp->SetCollisionEnabled(bIsActive ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
+	MeshComp->SetVisibility(bIsActive); 
 }
 
 void ASPickupBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
