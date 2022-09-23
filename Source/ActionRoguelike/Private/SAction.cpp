@@ -19,6 +19,13 @@ void USAction::StartAction_Implementation(AActor* InstigatorActor)
 
 	GetOwningComponent()->ActiveGameplayTags.AppendTags(GrantsTags);
 	RepData = { true, InstigatorActor };
+
+	GetOwningComponent()->OnActionStarted.Broadcast(GetOwningComponent(), this);
+
+	if (GetOwningComponent()->GetOwnerRole() == ROLE_Authority)
+	{
+		TimeStarted = GetWorld()->TimeSeconds;
+	}
 }
 
 void USAction::StopAction_Implementation(AActor* InstigatorActor)
@@ -30,6 +37,8 @@ void USAction::StopAction_Implementation(AActor* InstigatorActor)
 
 	GetOwningComponent()->ActiveGameplayTags.RemoveTags(GrantsTags);
 	RepData = { false, InstigatorActor };
+	
+	GetOwningComponent()->OnActionStopped.Broadcast(GetOwningComponent(), this);
 }
 
 bool USAction::CanStart_Implementation(AActor* InstigatorActor)
@@ -77,5 +86,6 @@ void USAction::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(USAction, RepData);
+	DOREPLIFETIME(USAction, TimeStarted);
 	DOREPLIFETIME(USAction, ActionComp);
 }

@@ -8,6 +8,7 @@
 #include "SAction.generated.h"
 
 class USActionComponent;
+class UTexture2D;
 
 USTRUCT()
 struct FActionRepData
@@ -57,6 +58,9 @@ public:
 
 protected:
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	UTexture2D* Icon;
+
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	USActionComponent* GetOwningComponent() const;
 
@@ -76,4 +80,8 @@ protected:
 
 	UFUNCTION()
 	void OnRep_RepData();
+
+	UPROPERTY(Replicated)
+	float TimeStarted;
+
 };
