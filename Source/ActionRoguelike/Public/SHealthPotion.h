@@ -17,7 +17,8 @@ class ACTIONROGUELIKE_API ASHealthPotion : public ASPickupBase
 public:
 	ASHealthPotion();
 
-	void Interact_Implementation(APawn* InstigatorPawn);
+	void Interact_Implementation(APawn* InstigatorPawn) override;
+	FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
 
 protected:
 

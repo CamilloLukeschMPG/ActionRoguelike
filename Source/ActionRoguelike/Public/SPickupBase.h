@@ -16,6 +16,9 @@ public:
 	// Sets default values for this actor's properties
 	ASPickupBase();
 
+	void Interact_Implementation(APawn* InstigatorPawn) override;
+	FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* MeshComp;

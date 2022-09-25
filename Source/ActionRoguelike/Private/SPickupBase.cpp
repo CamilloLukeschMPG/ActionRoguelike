@@ -23,6 +23,18 @@ ASPickupBase::ASPickupBase()
 	bIsActive = true;
 }
 
+void ASPickupBase::Interact_Implementation(APawn* InstigatorPawn)
+{
+	//....
+}
+
+
+FText ASPickupBase::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	return FText::GetEmpty();
+}
+
+
 void ASPickupBase::TriggerPickupTimer()
 {
 	FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &ASPickupBase::Respawn);
@@ -54,3 +66,4 @@ void ASPickupBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 	DOREPLIFETIME(ASPickupBase, bIsActive);
 }
+
