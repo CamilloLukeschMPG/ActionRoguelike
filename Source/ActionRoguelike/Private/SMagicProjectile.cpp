@@ -14,6 +14,8 @@
 
 ASMagicProjectile::ASMagicProjectile()
 {
+	InitialLifeSpan = 10.0f;
+
 	DamageAmount = 20.0f;
 }
 
